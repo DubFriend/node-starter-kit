@@ -1,0 +1,34 @@
+{
+  "name": "starter-kit",
+  "version": "0.0.0",
+  "description": "Generate Project Skeleton",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/DubFriend/node-starter-kit.git"
+  },
+  "author": "Brian Detering",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DubFriend/node-starter-kit/issues"
+  },
+  "homepage": "https://github.com/DubFriend/node-starter-kit#readme",
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "chalk": "^1.1.3",
+    "inquirer": "^3.1.0",
+    "lodash": "^4.17.4",
+    "yargs": "^8.0.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.0.1",
+    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-jsx-a11y": "^5.0.3",
+    "eslint-plugin-react": "^7.0.1"
+  }
+}
