@@ -2,7 +2,6 @@
 /* eslint-disable no-console */
 const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
-
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 const createESLintrc = require('./create-eslintrc');
@@ -12,8 +11,9 @@ const createEnv = require('./create-env');
 const npmInstall = require('./npm-install');
 const createMITLicense = require('./create-mit-license');
 const createReadme = require('./create-readme');
+const cmd = require('./cmd');
 
-console.log(chalk.cyan('Jumpstart!'));
+console.log(chalk.cyan('So your starting a new project, bout time...'));
 
 inquirer.prompt([
   {
@@ -104,6 +104,12 @@ inquirer.prompt([
       'lib',
     ].join('\n')),
 
+    fs.readFileAsync(`${__dirname}/files/.flowconfig`)
+    .then(file => fs.writeFileAsync(
+      `${process.cwd()}/.flowconfig`,
+      file
+    )),
+
     fs.mkdirAsync(`${process.cwd()}/deploy`)
     .then(() => Promise.all([
       fs.readFileAsync(`${__dirname}/files/docker-compose.yml`)
@@ -120,45 +126,60 @@ inquirer.prompt([
     ])),
 
     fs.mkdirAsync(`${process.cwd()}/src`)
-    .then(() => fs.writeFileAsync(`${process.cwd()}/src/.gitkeep`, ''))
-    .then(() => (
+    .then(() => Promise.all([
+
+      fs.mkdirAsync(`${process.cwd()}/src/test`)
+      .then(() => Promise.all([
+        fs.readFileAsync(`${__dirname}/files/test.unit.js`)
+        .then(file => fs.writeFileAsync(
+          `${process.cwd()}/src/test/test.unit.js`,
+          file
+        )),
+      ])),
+
       fs.readFileAsync(`${__dirname}/files/env.js`)
       .then(file => fs.writeFileAsync(
         `${process.cwd()}/src/env.js`,
         file
-      ))
-    ))
-    .then(() => (
-      type === 'graphql' ?
-        Promise.all([
-          fs.readFileAsync(`${__dirname}/files/server-graphql.js`)
-          .then(file => fs.writeFileAsync(
-            `${process.cwd()}/src/server.js`,
-            file
-          )),
+      )),
 
-          fs.mkdirAsync(`${process.cwd()}/src/graphql`)
-          .then(() => fs.writeFileAsync(
-            `${process.cwd()}/src/graphql/.gitkeep`,
-            ''
-          ))
-          .then(() => Promise.all([
-            fs.readFileAsync(`${__dirname}/files/graphql-root.js`)
-            .then(file => fs.writeFileAsync(
-              `${process.cwd()}/src/graphql/root.js`,
-              file
-            )),
-          ])),
-
-          fs.readFileAsync(`${__dirname}/files/graphql-logger.js`)
-          .then(file => fs.writeFileAsync(
-            `${process.cwd()}/src/logger.js`,
-            file
-          )),
-        ])
-         :
+      (type === 'graphql' ?
+        fs.readFileAsync(`${__dirname}/files/server-graphql.js`)
+        .then(file => fs.writeFileAsync(
+          `${process.cwd()}/src/server.js`,
+          file
+        )) :
         Promise.resolve()
-    )),
+      ),
+
+      (type === 'graphql' ?
+        fs.readFileAsync(`${__dirname}/files/graphql-logger.js`)
+        .then(file => fs.writeFileAsync(
+          `${process.cwd()}/src/logger.js`,
+          file
+        )) :
+        Promise.resolve()
+      ),
+
+      (type === 'graphql' ?
+        createUpdateGraphqlSchema() :
+        Promise.resolve()
+      ),
+
+      (type === 'graphql' ?
+        fs.mkdirAsync(`${process.cwd()}/src/graphql`)
+        .then(() => Promise.all([
+          fs.readFileAsync(`${__dirname}/files/graphql-root.js`)
+          .then(file => fs.writeFileAsync(
+            `${process.cwd()}/src/graphql/root.js`,
+            file
+          )),
+
+        ])) :
+        Promise.resolve()
+      ),
+
+    ])),
 
     fs.mkdirAsync(`${process.cwd()}/lib`)
     .then(() => fs.writeFileAsync(
@@ -176,13 +197,13 @@ inquirer.prompt([
 
     (license === 'MIT' ? createMITLicense({ author }) : Promise.resolve()),
   ])
-  .then(() => Promise.all([
-    type === 'graphql' ?
-      createUpdateGraphqlSchema() :
-      Promise.resolve(),
-  ]))
   .then(() => npmInstall({ type, transpiler }))
+  .then(() => cmd('flow-typed', 'install'))
 )
+.then(() => {
+  console.log(chalk.cyan('It\'s all setup, not try not to make it suck...'));
+  process.exit();
+})
 .catch((err) => {
   console.error(err, err.stack);
   process.exit(1);

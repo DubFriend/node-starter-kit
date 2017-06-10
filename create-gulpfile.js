@@ -46,8 +46,9 @@ module.exports = ({ type, transpiler }) => {
   'transpile',
   () => gulp.src('src/**/*.js')
   .pipe(babel({
-    presets: [${preset}]
+    presets: ['flow', '${preset}']
   }))
+  .pipe(gulp.dest('lib'))
 );
 `
     );
@@ -63,18 +64,26 @@ module.exports = ({ type, transpiler }) => {
     );
   }
 
-  lines.push(
+  if (type === 'graphql' || type === 'express') {
+    lines.push(
 `gulp.task('start-server', ['transpile'], done => {
   require('./lib/server')()
   .then(() => done()).done();
 });
+`
+    );
+  }
 
-gulp.task(
+  lines.push(
+`gulp.task(
   'test',
   [
     'transpile',
     ${type === 'graphql' ? '\'update-graphql-schema\',' : ''}
-    'start-server',
+    ${(type === 'graphql' || type === 'express') ?
+      '\'start-server\',' :
+      ''
+    }
   ],
   () => gulp.src([
     'src/**/test/**/*.unit.js',

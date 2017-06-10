@@ -53,6 +53,8 @@ module.exports = ({ type, transpiler }) => cmd(
     'mocha',
     'sinon',
     'yargs',
+    'flow-bin',
+    'babel-preset-flow',
   ]
   .concat(
     transpiler === 'flow-remove-types' ? [
