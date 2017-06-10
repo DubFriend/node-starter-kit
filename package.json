@@ -1,8 +1,9 @@
 {
-  "name": "starter-kit",
+  "name": "node-starter-kit",
   "version": "0.0.0",
   "description": "Generate Project Skeleton",
   "main": "index.js",
+  "bin": { "node-starter-kit": "./index.js" },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
