@@ -1,6 +1,6 @@
 {
   "name": "node-starter-kit",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Generate Project Skeleton",
   "main": "index.js",
   "bin": { "node-starter-kit": "./index.js" },

@@ -44,7 +44,7 @@ server()
   }
 
   return fs.writeFileAsync(
-    `${process.cwd()}/`,
+    `${process.cwd()}/src/index.js`,
     lines.join('\n')
   );
 };
