@@ -11,6 +11,7 @@ const createEnv = require('./create-env');
 const npmInstall = require('./npm-install');
 const createMITLicense = require('./create-mit-license');
 const createReadme = require('./create-readme');
+const createIndex = require('./create-index');
 const cmd = require('./cmd');
 
 console.log(chalk.cyan('So your starting a new project, bout time...'));
@@ -128,6 +129,8 @@ inquirer.prompt([
     fs.mkdirAsync(`${process.cwd()}/src`)
     .then(() => Promise.all([
 
+      createIndex({ type }),
+
       fs.mkdirAsync(`${process.cwd()}/src/test`)
       .then(() => Promise.all([
         fs.readFileAsync(`${__dirname}/files/test.unit.js`)
@@ -198,7 +201,7 @@ inquirer.prompt([
     (license === 'MIT' ? createMITLicense({ author }) : Promise.resolve()),
   ])
   .then(() => npmInstall({ type, transpiler }))
-  .then(() => cmd('flow-typed', 'install'))
+  .then(() => cmd('flow-typed', ['install']))
 )
 .then(() => {
   console.log(chalk.cyan('It\'s all setup, not try not to make it suck...'));
